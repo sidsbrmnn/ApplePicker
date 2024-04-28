@@ -1,19 +1,37 @@
+﻿using UnityEngine;
 using TMPro;
-using UnityEngine;
 
+[DisallowMultipleComponent]
+[RequireComponent(typeof(TextMeshProUGUI))]
 public class ScoreCounter : MonoBehaviour
 {
-    [Header("Dynamic")] public int score;
+    public static ScoreCounter Instance { get; private set; }
 
     private TextMeshProUGUI _text;
+    private int _score;
+
+    private void Awake()
+    {
+        if (Instance && Instance != this) Destroy(gameObject);
+        else Instance = this;
+    }
 
     private void Start()
     {
         _text = GetComponent<TextMeshProUGUI>();
+        Score = 0;
     }
 
-    private void Update()
+    public int Score
     {
-        _text.text = score.ToString("#,0");
+        get => _score;
+        set
+        {
+            _score = value;
+            _text.text = "Score: " + _score.ToString("#,0");
+
+            if (_score > HighScore.Instance.Score)
+                HighScore.Instance.Score = _score;
+        }
     }
 }

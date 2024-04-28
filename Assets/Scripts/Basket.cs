@@ -1,38 +1,38 @@
-using UnityEngine;
+﻿using UnityEngine;
 
+[DisallowMultipleComponent]
+[RequireComponent(typeof(Rigidbody))]
 public class Basket : MonoBehaviour
 {
-    private Camera _camera;
-    private ScoreCounter _counter;
+    private Camera _mainCamera;
 
     private void Start()
     {
-        _camera = Camera.main;
-        _counter = GameObject.Find("Score Counter").GetComponent<ScoreCounter>();
+        _mainCamera = Camera.main;
     }
 
     private void Update()
     {
-        var mousePos2D = Input.mousePosition;
-        mousePos2D.z = -_camera.transform.position.z;
+        var mousePosition = Input.mousePosition;
+        mousePosition.z = -_mainCamera.transform.position.z;
 
-        var mousePos3D =_camera.ScreenToWorldPoint(mousePos2D);
+        var worldPoint = _mainCamera.ScreenToWorldPoint(mousePosition);
 
-        var pos = Pos;
-        pos.x = mousePos3D.x;
-        Pos = pos;
+        var position = Position;
+        position.x = worldPoint.x;
+        Position = position;
     }
 
-    private void OnCollisionEnter(Collision other)
+    private void OnTriggerEnter(Collider other)
     {
-        if (!other.gameObject.CompareTag("Apple")) return;
-
-        Destroy(other.gameObject);
-        _counter.score += 100;
-        HighScore.Score = _counter.score;
+        if (other.gameObject.CompareTag("Apple"))
+        {
+            Destroy(other.gameObject);
+            ScoreCounter.Instance.Score += 100;
+        }
     }
 
-    private Vector3 Pos
+    private Vector3 Position
     {
         get => transform.position;
         set => transform.position = value;

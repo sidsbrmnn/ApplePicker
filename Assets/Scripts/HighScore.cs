@@ -1,52 +1,36 @@
 using TMPro;
 using UnityEngine;
 
+[DisallowMultipleComponent]
+[RequireComponent(typeof(TextMeshProUGUI))]
 public class HighScore : MonoBehaviour
 {
-    private static TextMeshProUGUI _text;
-    private static int _score = 1000;
+    public static HighScore Instance { get; private set; }
+
+    private TextMeshProUGUI _text;
+    private int _score;
 
     private void Awake()
     {
-        _text = GetComponent<TextMeshProUGUI>();
-
-        if (PlayerPrefs.HasKey("HighScore"))
-        {
-            Score = PlayerPrefs.GetInt("HighScore");
-        }
-
-        UpdatePrefsAndUI();
+        if (Instance && Instance != this) Destroy(gameObject);
+        else Instance = this;
     }
 
-    private static void UpdatePrefsAndUI()
+    private void Start()
     {
-        PlayerPrefs.SetInt("HighScore", Score);
-        if (_text != null)
-        {
-            _text.text = "High Score: " + Score.ToString("#,0");
-        }
+        _text = GetComponent<TextMeshProUGUI>();
+        _score = PlayerPrefs.GetInt("HighScore", 0);
+        _text.text = "High Score: " + _score.ToString("#,0");
     }
 
-    public static int Score
+    public int Score
     {
         get => _score;
         set
         {
-            if (value <= _score) return;
             _score = value;
-            UpdatePrefsAndUI();
+            PlayerPrefs.SetInt("HighScore", _score);
+            _text.text = "High Score: " + _score.ToString("#,0");
         }
-    }
-
-    [Tooltip("Check this box to reset the HighScore in PlayerPrefs")]
-    public bool resetHighScore;
-
-    private void OnDrawGizmos()
-    {
-        if (!resetHighScore) return;
-
-        resetHighScore = false;
-        PlayerPrefs.SetInt("HighScore", 1000);
-        Debug.LogWarning("PlayerPrefs HighScore reset to 1,000.");
     }
 }

@@ -1,49 +1,43 @@
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class AppleTree : MonoBehaviour
 {
-    [Header("Inscribed")]
-    public GameObject applePrefab;
-    public float speed = 1f;
-    public float leftAndRightEdge = 10f;
-    public float changeDirChance = 0.1f;
-    public float appleDropDelay = 1f;
+    [Header("Apple Tree Settings")]
+    [SerializeField] private float speed = 10f;
+    [SerializeField] private Vector2 bounds = new(-24f, 24f);
+    [SerializeField] private float changeDirectionChance = 0.1f;
+
+    [Header("Apple Spawner Settings")]
+    [SerializeField] private GameObject applePrefab;
+    [SerializeField] private float spawnDelay = 1f;
 
     private void Start()
     {
-        InvokeRepeating(nameof(DropApple), 2f, appleDropDelay);
-    }
-
-    private void DropApple()
-    {
-        Instantiate(applePrefab, Pos, Quaternion.identity);
+        InvokeRepeating(nameof(DropApple), 2f, spawnDelay);
     }
 
     private void Update()
     {
-        var pos = Pos;
-        pos.x += speed * Time.deltaTime;
-        Pos = pos;
+        var position = Position;
+        position.x += speed * Time.deltaTime;
+        Position = position;
 
-        if (pos.x < -leftAndRightEdge)
-        {
-            speed = Mathf.Abs(speed);
-        }
-        else if (pos.x > leftAndRightEdge)
-        {
-            speed = -Mathf.Abs(speed);
-        }
+        if (position.x < bounds.x) speed = Mathf.Abs(speed);
+        else if (position.x > bounds.y) speed = -Mathf.Abs(speed);
     }
 
     private void FixedUpdate()
     {
-        if (Random.value < changeDirChance)
-        {
-            speed *= -1;
-        }
+        if (Random.value < changeDirectionChance) speed *= -1;
     }
 
-    private Vector3 Pos
+    private void DropApple()
+    {
+        Instantiate(applePrefab, Position, Quaternion.identity);
+    }
+
+    private Vector3 Position
     {
         get => transform.position;
         set => transform.position = value;

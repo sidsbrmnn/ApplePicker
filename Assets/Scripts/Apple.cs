@@ -1,22 +1,13 @@
 using UnityEngine;
 
+[DisallowMultipleComponent]
+[RequireComponent(typeof(Rigidbody))]
 public class Apple : MonoBehaviour
 {
-    private Camera _camera;
-    private const float BottomY = -20f;
-
-    private void Start()
-    {
-        _camera = Camera.main;
-    }
+    [SerializeField] private float bottomY = -20f;
 
     private void Update()
     {
-        if (transform.position.y >= BottomY) return;
-
-        Destroy(gameObject);
-
-        var applePicker = _camera.GetComponent<ApplePicker>();
-        applePicker.DestroyAllApples();
+        if (transform.position.y < bottomY) BasketManager.Instance.DestroyBasket();
     }
 }
