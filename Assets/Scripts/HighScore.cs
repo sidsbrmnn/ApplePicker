@@ -7,30 +7,57 @@ public class HighScore : MonoBehaviour
 {
     public static HighScore Instance { get; private set; }
 
-    private TextMeshProUGUI _text;
-    private int _score;
+    private const string k_HighScoreKey = "HighScore";
+
+    private TextMeshProUGUI m_Text;
+    private int m_Value;
 
     private void Awake()
     {
-        if (Instance && Instance != this) Destroy(gameObject);
-        else Instance = this;
+        if (Instance && Instance != this)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
+
+    private void OnEnable()
+    {
+        m_Text = GetComponent<TextMeshProUGUI>();
     }
 
     private void Start()
     {
-        _text = GetComponent<TextMeshProUGUI>();
-        _score = PlayerPrefs.GetInt("HighScore", 0);
-        _text.text = "High Score: " + _score.ToString("#,0");
+        m_Value = PlayerPrefs.GetInt(k_HighScoreKey, 0);
+        UpdateText();
     }
 
-    public int Score
+    private void OnDestroy()
     {
-        get => _score;
-        set
+        if (Instance == this)
         {
-            _score = value;
-            PlayerPrefs.SetInt("HighScore", _score);
-            _text.text = "High Score: " + _score.ToString("#,0");
+            Instance = null;
+        }
+    }
+
+    public void TrySetHighScore(int value)
+    {
+        if (value > m_Value)
+        {
+            m_Value = value;
+            PlayerPrefs.SetInt(k_HighScoreKey, m_Value);
+            UpdateText();
+        }
+    }
+
+    private void UpdateText()
+    {
+        if (m_Text)
+        {
+            m_Text.text = $"High Score: {m_Value:#,0}";
         }
     }
 }

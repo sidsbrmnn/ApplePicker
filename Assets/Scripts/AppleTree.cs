@@ -5,10 +5,10 @@ public class AppleTree : MonoBehaviour
 {
     [Header("Apple Tree Settings")]
     [SerializeField] private float speed = 10f;
-    [SerializeField] private Vector2 bounds = new(-24f, 24f);
-    [SerializeField] private float changeDirectionChance = 0.1f;
+    [SerializeField] private float leftAndRightEdge = 24f;
+    [SerializeField] private float changeDirectionChange = 0.1f;
 
-    [Header("Apple Spawner Settings")]
+    [Header("Apple Drop Settings")]
     [SerializeField] private GameObject applePrefab;
     [SerializeField] private float spawnDelay = 1f;
 
@@ -19,27 +19,30 @@ public class AppleTree : MonoBehaviour
 
     private void Update()
     {
-        var position = Position;
+        var position = transform.position;
         position.x += speed * Time.deltaTime;
-        Position = position;
+        transform.position = position;
 
-        if (position.x < bounds.x) speed = Mathf.Abs(speed);
-        else if (position.x > bounds.y) speed = -Mathf.Abs(speed);
+        if (position.x < -leftAndRightEdge)
+        {
+            speed = Mathf.Abs(speed);
+        }
+        else if (position.x > leftAndRightEdge)
+        {
+            speed = -Mathf.Abs(speed);
+        }
     }
 
     private void FixedUpdate()
     {
-        if (Random.value < changeDirectionChance) speed *= -1;
+        if (Random.value < changeDirectionChange)
+        {
+            speed *= -1;
+        }
     }
 
     private void DropApple()
     {
-        Instantiate(applePrefab, Position, Quaternion.identity);
-    }
-
-    private Vector3 Position
-    {
-        get => transform.position;
-        set => transform.position = value;
+        Instantiate(applePrefab, transform.position, Quaternion.identity);
     }
 }

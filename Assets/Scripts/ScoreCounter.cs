@@ -1,5 +1,5 @@
-﻿using UnityEngine;
 using TMPro;
+using UnityEngine;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(TextMeshProUGUI))]
@@ -7,31 +7,53 @@ public class ScoreCounter : MonoBehaviour
 {
     public static ScoreCounter Instance { get; private set; }
 
-    private TextMeshProUGUI _text;
-    private int _score;
+    public int Value { get; private set; }
+
+    private TextMeshProUGUI m_Text;
 
     private void Awake()
     {
-        if (Instance && Instance != this) Destroy(gameObject);
-        else Instance = this;
+        if (Instance && Instance != this)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
+
+    private void OnEnable()
+    {
+        m_Text = GetComponent<TextMeshProUGUI>();
     }
 
     private void Start()
     {
-        _text = GetComponent<TextMeshProUGUI>();
-        Score = 0;
+        Value = 0;
+        UpdateText();
     }
 
-    public int Score
+    private void OnDestroy()
     {
-        get => _score;
-        set
+        if (Instance == this)
         {
-            _score = value;
-            _text.text = "Score: " + _score.ToString("#,0");
+            Instance = null;
+        }
+    }
 
-            if (_score > HighScore.Instance.Score)
-                HighScore.Instance.Score = _score;
+    public void AddScore(int value)
+    {
+        Value += value;
+        HighScore.Instance.TrySetHighScore(Value);
+        UpdateText();
+    }
+
+    private void UpdateText()
+    {
+        if (m_Text)
+        {
+            m_Text.text = $"{Value:#,0}";
         }
     }
 }
