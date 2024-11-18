@@ -27,6 +27,12 @@ public class AppleTree : MonoBehaviour
             speed = -Mathf.Abs(speed);
     }
 
+    private void FixedUpdate()
+    {
+        if (Random.value < chanceToChangeDirections)
+            speed *= -1;
+    }
+
     private void DropApple()
     {
         Instantiate(applePrefab, transform.position, Quaternion.identity);
