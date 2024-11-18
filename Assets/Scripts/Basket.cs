@@ -3,25 +3,31 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class Basket : MonoBehaviour
 {
+    private Camera m_MainCamera;
+
+    private void Start()
+    {
+        m_MainCamera = Camera.main;
+    }
+
     private void Update()
     {
-        var mousePos2D = Input.mousePosition;
-        mousePos2D.z = -Camera.main.transform.position.z;
+        var mousePos = Input.mousePosition;
+        mousePos.z = -m_MainCamera.transform.position.z;
 
-        var mousePos3D = Camera.main.ScreenToWorldPoint(mousePos2D);
+        var worldPos = m_MainCamera.ScreenToWorldPoint(mousePos);
 
         var position = transform.position;
-        position.x = mousePos3D.x;
+        position.x = worldPos.x;
         transform.position = position;
     }
 
     private void OnCollisionEnter(Collision other)
     {
-        var apple = other.gameObject.GetComponent<Apple>();
-        if (apple)
+        if (other.gameObject.CompareTag("Apple"))
         {
-            Destroy(apple.gameObject);
-            ScoreCounter.Instance.AddScore(100);
+            ScoreCounter.Instance.Add(100);
+            Destroy(other.gameObject);
         }
     }
 }

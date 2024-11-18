@@ -7,8 +7,6 @@ public class HighScore : MonoBehaviour
 {
     public static HighScore Instance { get; private set; }
 
-    private const string k_HighScoreKey = "HighScore";
-
     private TextMeshProUGUI m_Text;
     private int m_Value;
 
@@ -17,47 +15,31 @@ public class HighScore : MonoBehaviour
         if (Instance && Instance != this)
         {
             Destroy(gameObject);
+            return;
         }
-        else
-        {
-            Instance = this;
-        }
-    }
 
-    private void OnEnable()
-    {
+        Instance = this;
         m_Text = GetComponent<TextMeshProUGUI>();
+        m_Value = PlayerPrefs.GetInt("HighScore", 0);
     }
 
     private void Start()
     {
-        m_Value = PlayerPrefs.GetInt(k_HighScoreKey, 0);
         UpdateText();
     }
 
-    private void OnDestroy()
+    public void TryUpdateHighScore(int value)
     {
-        if (Instance == this)
-        {
-            Instance = null;
-        }
-    }
+        if (value <= m_Value) return;
 
-    public void TrySetHighScore(int value)
-    {
-        if (value > m_Value)
-        {
-            m_Value = value;
-            PlayerPrefs.SetInt(k_HighScoreKey, m_Value);
-            UpdateText();
-        }
+        m_Value = value;
+        PlayerPrefs.SetInt("HighScore", m_Value);
+        UpdateText();
     }
 
     private void UpdateText()
     {
         if (m_Text)
-        {
             m_Text.text = $"High Score: {m_Value:#,0}";
-        }
     }
 }

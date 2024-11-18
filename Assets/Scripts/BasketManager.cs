@@ -8,9 +8,9 @@ public class BasketManager : MonoBehaviour
     public static BasketManager Instance { get; private set; }
 
     [SerializeField] private GameObject basketPrefab;
-    [SerializeField] private int count = 3;
-    [SerializeField] private float bottomY = -14f;
-    [SerializeField] private float spacing = 2f;
+    [SerializeField] private float bottomY;
+    [SerializeField] private float spacing;
+    [SerializeField] private int basketCount;
 
     private List<GameObject> m_Baskets;
 
@@ -19,30 +19,21 @@ public class BasketManager : MonoBehaviour
         if (Instance && Instance != this)
         {
             Destroy(gameObject);
+            return;
         }
-        else
-        {
-            Instance = this;
-        }
+
+        Instance = this;
     }
 
     private void Start()
     {
         m_Baskets = new List<GameObject>();
 
-        for (var i = 0; i < count; i++)
+        for (var i = 0; i < basketCount; i++)
         {
             var position = new Vector3(0, bottomY + i * spacing, 0);
-            var basket = Instantiate(basketPrefab, position, Quaternion.identity);
-            m_Baskets.Add(basket);
-        }
-    }
-
-    private void OnDestroy()
-    {
-        if (Instance == this)
-        {
-            Instance = null;
+            var go = Instantiate(basketPrefab, position, Quaternion.identity);
+            m_Baskets.Add(go);
         }
     }
 
@@ -50,18 +41,14 @@ public class BasketManager : MonoBehaviour
     {
         var apples = GameObject.FindGameObjectsWithTag("Apple");
         foreach (var apple in apples)
-        {
             Destroy(apple);
-        }
 
-        var index = m_Baskets.Count - 1;
-        var basket = m_Baskets[index];
-        m_Baskets.RemoveAt(index);
-        Destroy(basket);
+        var idx = m_Baskets.Count - 1;
+        var go = m_Baskets[idx];
+        m_Baskets.RemoveAt(idx);
+        Destroy(go);
 
         if (m_Baskets.Count == 0)
-        {
-            SceneManager.LoadScene("_Scene_0");
-        }
+            SceneManager.LoadScene(0);
     }
 }

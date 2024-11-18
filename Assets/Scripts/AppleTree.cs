@@ -3,18 +3,16 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class AppleTree : MonoBehaviour
 {
-    [Header("Apple Tree Settings")]
-    [SerializeField] private float speed = 10f;
-    [SerializeField] private float leftAndRightEdge = 24f;
-    [SerializeField] private float changeDirectionChange = 0.1f;
+    [SerializeField] private float speed;
+    [SerializeField] private float leftAndRightEdge;
+    [SerializeField] private float chanceToChangeDirections;
 
-    [Header("Apple Drop Settings")]
     [SerializeField] private GameObject applePrefab;
-    [SerializeField] private float spawnDelay = 1f;
+    [SerializeField] private float spawnInterval;
 
     private void Start()
     {
-        InvokeRepeating(nameof(DropApple), 2f, spawnDelay);
+        InvokeRepeating(nameof(DropApple), 2f, spawnInterval);
     }
 
     private void Update()
@@ -24,21 +22,9 @@ public class AppleTree : MonoBehaviour
         transform.position = position;
 
         if (position.x < -leftAndRightEdge)
-        {
             speed = Mathf.Abs(speed);
-        }
         else if (position.x > leftAndRightEdge)
-        {
             speed = -Mathf.Abs(speed);
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        if (Random.value < changeDirectionChange)
-        {
-            speed *= -1;
-        }
     }
 
     private void DropApple()

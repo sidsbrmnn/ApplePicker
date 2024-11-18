@@ -7,53 +7,36 @@ public class ScoreCounter : MonoBehaviour
 {
     public static ScoreCounter Instance { get; private set; }
 
-    public int Value { get; private set; }
-
     private TextMeshProUGUI m_Text;
+    private int m_Value;
 
     private void Awake()
     {
         if (Instance && Instance != this)
         {
             Destroy(gameObject);
+            return;
         }
-        else
-        {
-            Instance = this;
-        }
-    }
 
-    private void OnEnable()
-    {
+        Instance = this;
         m_Text = GetComponent<TextMeshProUGUI>();
     }
 
     private void Start()
     {
-        Value = 0;
         UpdateText();
     }
 
-    private void OnDestroy()
+    public void Add(int value)
     {
-        if (Instance == this)
-        {
-            Instance = null;
-        }
-    }
-
-    public void AddScore(int value)
-    {
-        Value += value;
-        HighScore.Instance.TrySetHighScore(Value);
+        m_Value += value;
+        HighScore.Instance.TryUpdateHighScore(m_Value);
         UpdateText();
     }
 
     private void UpdateText()
     {
         if (m_Text)
-        {
-            m_Text.text = $"{Value:#,0}";
-        }
+            m_Text.text = $"{m_Value:#,0}";
     }
 }
